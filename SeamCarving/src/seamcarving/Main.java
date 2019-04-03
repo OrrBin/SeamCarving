@@ -1,5 +1,6 @@
 package seamcarving;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -14,16 +15,18 @@ public class Main {
 		
 		BufferedImage img = ImageIO.read(new File(path));
 		File imgdst = new File("C:\\Users\\yahav\\Desktop\\tiger2.jpg");
-		
+		Color myWhite = new Color(0,0,0); // Color white
+		int rgb = myWhite.getRGB();
 		byte[] pixels = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
 		
-		for(int i = 0; i < img.getWidth()/2;i++)
-	        for(int j = 0; j < img.getHeight()/2; j ++)
+		for(int i = 0; i < img.getWidth();i++)
+	        for(int j = 0; j < img.getHeight(); j ++)
 	        {
-	            image.setRGB(i,j , 20);
+	        	if (j % 2 == 0)
+	        		continue;
+	            img.setRGB(i,j , rgb);
 	        }
 		
-		img.s
 		ImageIO.write(img,"jpg", imgdst);
 
 	}
