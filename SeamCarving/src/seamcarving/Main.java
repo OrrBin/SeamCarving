@@ -23,7 +23,7 @@ public class Main {
 		String outputFileName = args[4];
 
 		BufferedImage img = ImageIO.read(new File(inputFileName));
-		File imgdst = new File("C:\\Users\\yahav\\Desktop\\tiger2.jpg");
+		File imgdst = new File(outputFileName);
 		Color myWhite = new Color(0,0,0); // Color white
 		int rgb = myWhite.getRGB();
 		byte[] pixels = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
