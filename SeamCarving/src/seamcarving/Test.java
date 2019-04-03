@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 
 import seamcarving.algorithm.BasicEnergyFunction;
 import seamcarving.algorithm.EnergyFunction;
+import seamcarving.algorithm.EntropyEnergyFunction;
 
 public class Test {
 
@@ -28,14 +29,18 @@ public class Test {
 		BufferedImage imgOut = ImageIO.read(new File(inputFileName));
 		File imgdst = new File(outputFileName);		
 		Color c;
-		EnergyFunction ef = new BasicEnergyFunction();
-//		EnergyFunction ef = new EntropyEnergyFunction(img);
+//		EnergyFunction ef = new BasicEnergyFunction();
+		EnergyFunction ef = new EntropyEnergyFunction(img);
 		
 		for(int i = 0; i < img.getWidth();i++)
 	        for(int j = 0; j < img.getHeight(); j ++)
 	        {
 	        	 energy = ef.calculateEnergyForPixel(img, i, j);
-	        	 imgOut.setRGB(i, j, (int)(energy));
+	        	 Color col = new Color((int)energy);
+	        	 int avg = (int)(col.getRed() + col.getGreen() + col.getBlue())/3;
+	        	 avg = Math.min(avg + 20, 255);
+	        	 Color gray = new Color(avg, avg, avg);
+	        	 imgOut.setRGB(i, j, gray.getRGB());
 	        }
 		
 		ImageIO.write(imgOut,"jpg", imgdst);

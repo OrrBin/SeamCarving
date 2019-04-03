@@ -7,8 +7,7 @@ public class EntropyEnergyFunction implements EnergyFunction {
 
 	private BasicEnergyFunction basicFunc;
 	private double[][] pArr;
-	private int entropyCount = 0;
-	private int getPCount = 0;
+	
 	public EntropyEnergyFunction(BufferedImage img) {
 		basicFunc = new BasicEnergyFunction();
 		pArr = new double[img.getWidth()][img.getHeight()];
@@ -18,7 +17,7 @@ public class EntropyEnergyFunction implements EnergyFunction {
 	public double calculateEnergyForPixel(BufferedImage img, int x, int y) {
 		double energy = basicFunc.calculateEnergyForPixel(img, x, y);
 		double entropy = calculateEntropyForPixel(img, x, y);
-		double w = 1;
+		double w = 0.9;
 		return (w * energy + (1 - w) * entropy);
 	}
 
