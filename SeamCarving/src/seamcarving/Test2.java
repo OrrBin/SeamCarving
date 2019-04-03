@@ -10,8 +10,10 @@ import javax.imageio.ImageIO;
 import seamcarving.algorithm.BasicEnergyFunction;
 import seamcarving.algorithm.EnergyFunction;
 import seamcarving.algorithm.EntropyEnergyFunction;
+import seamcarving.algorithm.SeamCarving;
+import seamcarving.algorithm.StraightSeamCarving;
 
-public class Test {
+public class Test2 {
 
 	public static void main(String[] args) throws IOException {
 		boolean grey = true;
@@ -25,27 +27,15 @@ public class Test {
 		int numOfRow = Integer.valueOf(args[2]);
 		int energyType = Integer.valueOf(args[3]);
 		String outputFileName = args[4];
+		
 		double energy;
 		BufferedImage img = ImageIO.read(new File(inputFileName));
-		BufferedImage imgOut = ImageIO.read(new File(inputFileName));
 		File imgdst = new File(outputFileName);
 		Color c;
 		EnergyFunction ef = new BasicEnergyFunction();
 		// EnergyFunction ef = new EntropyEnergyFunction(img);
-		double[][] heatMap = ef.getEnergyMap(img);
-
-		for (int i = 0; i < img.getWidth(); i++)
-			for (int j = 0; j < img.getHeight(); j++) {
-				energy = heatMap[j][i];
-				if (grey) {
-					Color col = new Color((int) energy);
-					int avg = (int) (col.getRed() + col.getGreen() + col.getBlue()) / 3;
-					avg = Math.min(avg + 20, 255);
-					Color gray = new Color(avg, avg, avg);
-					imgOut.setRGB(i, j, gray.getRGB());
-				} else
-					imgOut.setRGB(i, j, (int) energy);
-			}
+		SeamCarving sc = new StraightSeamCarving();
+		BufferedImage imgOut = sc.vertical(img, numOfCol, ef);
 
 		ImageIO.write(imgOut, "jpg", imgdst);
 

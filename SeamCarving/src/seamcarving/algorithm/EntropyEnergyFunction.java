@@ -66,4 +66,17 @@ public class EntropyEnergyFunction implements EnergyFunction {
 
 		return P;
 	}
+	
+	public double[][] getEnergyMap(BufferedImage img) {
+		double[][] heatMap = new double[img.getHeight()][img.getWidth()];
+		
+		
+		for (int i = 0; i < img.getWidth(); i++) {
+			for (int j = 0; j < img.getHeight(); j++) {
+				heatMap[j][i] = calculateEnergyForPixel(img,i,j);
+			}
+		}
+
+		return heatMap;
+	}
 }
