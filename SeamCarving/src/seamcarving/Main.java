@@ -23,17 +23,16 @@ public class Main {
 		String outputFileName = args[4];
 
 		BufferedImage img = ImageIO.read(new File(inputFileName));
-		File imgdst = new File(outputFileName);
-		Color myWhite = new Color(0,0,0); // Color white
-		int rgb = myWhite.getRGB();
-		byte[] pixels = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+		File imgdst = new File(outputFileName);		
+		Color c;
 		
 		for(int i = 0; i < img.getWidth();i++)
 	        for(int j = 0; j < img.getHeight(); j ++)
 	        {
 	        	if (j % 2 == 0)
 	        		continue;
-	            img.setRGB(i,j , rgb);
+	        	c = new Color(img.getRGB(i,j));
+	            System.out.println(c.getRed() + " " +c.getGreen() +" "+ c.getBlue());
 	        }
 		
 		ImageIO.write(img,"jpg", imgdst);
