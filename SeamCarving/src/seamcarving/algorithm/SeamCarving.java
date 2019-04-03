@@ -1,5 +1,10 @@
 package seamcarving.algorithm;
 
-public interface SeamCarving {
+import java.awt.image.BufferedImage;
 
+public interface SeamCarving {
+	
+	BufferedImage vertical(BufferedImage input, int numOfColumns);
+	
+	BufferedImage horizontal(BufferedImage input, int numOfRows);
 }
