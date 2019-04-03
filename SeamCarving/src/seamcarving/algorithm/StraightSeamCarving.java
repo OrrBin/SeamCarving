@@ -2,7 +2,7 @@ package seamcarving.algorithm;
 
 import java.awt.image.BufferedImage;
 
-public class straightSeamCarving implements SeamCarving {
+public class StraightSeamCarving implements SeamCarving {
 
 	@Override
 	public BufferedImage vertical(BufferedImage input, int numOfColumns) {
