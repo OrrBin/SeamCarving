@@ -14,7 +14,7 @@ import seamcarving.algorithm.EntropyEnergyFunction;
 public class Test {
 
 	public static void main(String[] args) throws IOException {
-		boolean grey = true;
+		boolean grey = false;
 		
 		if (args.length == 0 || args.length < 5) {
 			throw new IllegalArgumentException("Wrong number of arguments");
@@ -30,8 +30,8 @@ public class Test {
 		BufferedImage imgOut = ImageIO.read(new File(inputFileName));
 		File imgdst = new File(outputFileName);
 		Color c;
-		EnergyFunction ef = new BasicEnergyFunction();
-		// EnergyFunction ef = new EntropyEnergyFunction(img);
+//		EnergyFunction ef = new BasicEnergyFunction();
+		EnergyFunction ef = new EntropyEnergyFunction(img);
 		double[][] heatMap = ef.getEnergyMap(img);
 
 		for (int i = 0; i < img.getWidth(); i++)

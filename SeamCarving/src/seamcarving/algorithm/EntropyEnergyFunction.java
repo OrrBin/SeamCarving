@@ -17,7 +17,7 @@ public class EntropyEnergyFunction implements EnergyFunction {
 	public double calculateEnergyForPixel(BufferedImage img, int x, int y) {
 		double energy = basicFunc.calculateEnergyForPixel(img, x, y);
 		double entropy = calculateEntropyForPixel(img, x, y);
-		double w = 0.9;
+		double w = 0;
 		return (w * energy + (1 - w) * entropy);
 	}
 
@@ -38,6 +38,7 @@ public class EntropyEnergyFunction implements EnergyFunction {
 
 		for (int i = startI; i <= endI; i++) {
 			for (int j = startJ; j <= endJ; j++) {
+				neighboursNum++;
 				if(pArr[i][j] == 0) {
 					pArr[i][j] = getP(img, i, j);
 				} 
@@ -45,7 +46,7 @@ public class EntropyEnergyFunction implements EnergyFunction {
 				H += P * Math.log(P);
 			}
 		}
-
+		
 		return -H;
 	}
 

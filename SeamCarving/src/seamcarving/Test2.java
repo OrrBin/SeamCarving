@@ -32,12 +32,15 @@ public class Test2 {
 		BufferedImage img = ImageIO.read(new File(inputFileName));
 		File imgdst = new File(outputFileName);
 		Color c;
-		EnergyFunction ef = new BasicEnergyFunction();
-		// EnergyFunction ef = new EntropyEnergyFunction(img);
+//		EnergyFunction ef = new BasicEnergyFunction();
+		 EnergyFunction ef = new EntropyEnergyFunction(img);
 		SeamCarving sc = new StraightSeamCarving();
 		BufferedImage imgOut = sc.vertical(img, numOfCol, ef);
+//		BufferedImage imgOut = sc.horizontal(img, numOfRow, ef);
 
 		ImageIO.write(imgOut, "jpg", imgdst);
+		
+		System.out.println("Done!");
 
 	}
 }
