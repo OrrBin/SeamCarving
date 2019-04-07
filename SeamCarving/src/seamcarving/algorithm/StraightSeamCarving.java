@@ -31,10 +31,10 @@ public class StraightSeamCarving implements SeamCarving {
 
 	@Override
 	public int[][] vertical(int[][] img, int numOfColumns, EnergyFunction func) {
-		boolean cut = true;
+		boolean cut = false;
 		int height = img.length, width = img[0].length;
 		double[][] heatMap  = func.getEnergyMap(img);
-		int opt = 1;
+		int opt;
 
 		for (int i = 0; i < numOfColumns; i++) {
 
@@ -43,6 +43,7 @@ public class StraightSeamCarving implements SeamCarving {
 				opt = getOptimalSeam(heatMap);
 				img = Util.shiftImage(img, opt);
 			} else {
+				opt = getOptimalSeam(heatMap);
 				for (int j = 0; j < width; j++) {
 					int col = 255 - (i % 255);
 					img[opt][j] = new Color(col, col, col).getRGB();
@@ -57,26 +58,7 @@ public class StraightSeamCarving implements SeamCarving {
 
 	@Override
 	public int[][] horizontal(int[][] img, int numOfRows, EnergyFunction func) {
-		boolean cut = true;
-		int height = img.length, width = img[0].length;
-		double[][] heatMap  = func.getEnergyMap(img);
-		int opt = 1;
-
-		for (int i = 0; i < numOfRows; i++) {
-
-			if (cut) {
-				heatMap = func.getEnergyMap(img);
-				opt = getOptimalSeam(heatMap);
-				img = Util.shiftImage(img, opt);
-			} else {
-				for (int j = 0; j < width; j++) {
-					int col = 255 - (i % 255);
-					img[opt][j] = new Color(col, col, col).getRGB();
-					heatMap[opt][j] = Double.POSITIVE_INFINITY;
-				}
-			}
-		}
-
+		
 		return img;
 	}
 
