@@ -3,21 +3,25 @@ package seamcarving.algorithm;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+import seamcarving.Util;
+
 public class BasicEnergyFunction implements EnergyFunction {
 
 	@Override
-	public double calculateEnergyForPixel(BufferedImage img, int x, int y) {
-		int startI = Math.max(x - 1, 0), endI = Math.min(img.getWidth() - 1, x + 1);
-		int startJ = Math.max(y - 1, 0), endJ = Math.min(img.getHeight() - 1, y + 1);
-		Color c = new Color(img.getRGB(x, y)), currColor;
+	public double calculateEnergyForPixel(int[][] img, int i, int j) { // x - row, y - column
+		int height = img.length;
+		int width = img[0].length;
+		int startI = Math.max(i - 1, 0), endI = Math.min(height - 1, i + 1);
+		int startJ = Math.max(j - 1, 0), endJ = Math.min(width - 1, j + 1);
+		Color c = new Color(img[i][j]), currColor;
 		int r = c.getRed(), g = c.getGreen(), b = c.getBlue();
-		int neighboursNum = 0;
+		int neighboursNum = -1; // excludes self
 		double valDiff, totalDiff = 0;
 
-		for (int i = startI; i <= endI; i++) {
-			for (int j = startJ; j <= endJ; j++) {
+		for (int k = startI; k <= endI; k++) {
+			for (int l = startJ; l <= endJ; l++) {
 				neighboursNum++;
-				currColor = new Color(img.getRGB(i, j));
+				currColor = new Color(img[k][l]);
 				valDiff = 0;
 				valDiff += Math.abs(currColor.getRed() - r);
 				valDiff += Math.abs(currColor.getGreen() - g);
@@ -33,16 +37,19 @@ public class BasicEnergyFunction implements EnergyFunction {
 	}
 
 	@Override
-	public double[][] getEnergyMap(BufferedImage img) {
-		double[][] heatMap = new double[img.getHeight()][img.getWidth()];
+	public double[][] getEnergyMap(int[][] img) {
+		int height = img.length;
+		int width = img[0].length;
+		double[][] heatMap = new double[height][width];
 		
 		
-		for (int i = 0; i < img.getWidth(); i++) {
-			for (int j = 0; j < img.getHeight(); j++) {
-				heatMap[j][i] = calculateEnergyForPixel(img,i,j);
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				heatMap[i][j] = calculateEnergyForPixel(img,i,j);
 			}
 		}
-
+		
+//		Util.printArr(heatMap);
 		return heatMap;
 	}
 }

@@ -23,25 +23,22 @@ public class EntropyEnergyFunction implements EnergyFunction {
 
 
 	private int getGrayScale(BufferedImage img, int x, int y) {
-		Color c = new Color(img.getRGB(x, y)), currColor;
+		Color c = new Color(img.getRGB(x, y));
 		int r = c.getRed(), g = c.getGreen(), b = c.getBlue();
 		int avg = (r + g + b) / 3;
-		return new Color(avg, avg, avg).getRGB();
+		return new Color(avg,avg,avg).getRGB();
 	}
 
 	private double calculateEntropyForPixel(BufferedImage img, int x, int y) {
 		int startI = Math.max(x - 4, 0), endI = Math.min(img.getWidth() - 1, x + 4);
 		int startJ = Math.max(y - 4, 0), endJ = Math.min(img.getHeight() - 1, y + 4);
-		int grayScale = getGrayScale(img, x, y);
-		int neighboursNum = 0;
 		double H = 0, P;
 
 		for (int i = startI; i <= endI; i++) {
 			for (int j = startJ; j <= endJ; j++) {
-				neighboursNum++;
-				if(pArr[i][j] == 0) {
+				if (pArr[i][j] == 0) {
 					pArr[i][j] = getP(img, i, j);
-				} 
+				}
 				P = pArr[i][j];
 				H += P * Math.log(P);
 			}
@@ -54,7 +51,6 @@ public class EntropyEnergyFunction implements EnergyFunction {
 		int startI = Math.max(x - 4, 0), endI = Math.min(img.getWidth() - 1, x + 4);
 		int startJ = Math.max(y - 4, 0), endJ = Math.min(img.getHeight() - 1, y + 4);
 		int grayScale = getGrayScale(img, x, y);
-		int neighboursNum = 0;
 		double P = 0;
 
 		for (int i = startI; i <= endI; i++) {
@@ -62,7 +58,7 @@ public class EntropyEnergyFunction implements EnergyFunction {
 				P += getGrayScale(img, i, j);
 			}
 		}
-
+		
 		P = grayScale / P;
 
 		return P;
