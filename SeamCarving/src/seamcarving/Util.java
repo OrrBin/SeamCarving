@@ -139,4 +139,21 @@ public class Util {
 		return imgOut;
 	}
 
+	public static int[][] rotateMatrix(int[][] matrix, boolean clockwise) {
+		 int totalRowsOfRotatedMatrix = matrix[0].length; //Total columns of Original Matrix
+		  int totalColsOfRotatedMatrix = matrix.length; //Total rows of Original Matrix
+
+		  int[][] rotatedMatrix = new int[totalRowsOfRotatedMatrix][totalColsOfRotatedMatrix];
+
+		  for (int i = 0; i < matrix.length; i++) {
+		   for (int j = 0; j < matrix[0].length; j++) {
+			if(clockwise)
+				rotatedMatrix[j][ (totalColsOfRotatedMatrix-1)- i] = matrix[i][j];
+			else
+				rotatedMatrix[(totalRowsOfRotatedMatrix-1)-j][i] = matrix[i][j];
+		   }
+		  }
+		  return rotatedMatrix;
+	}
+
 }

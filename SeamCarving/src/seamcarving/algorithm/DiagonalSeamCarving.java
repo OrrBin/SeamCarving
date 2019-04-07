@@ -1,11 +1,40 @@
 package seamcarving.algorithm;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import seamcarving.Util;
 
 public class DiagonalSeamCarving implements SeamCarving {
-	
+
+	private String outputDirPath;
+
+	public DiagonalSeamCarving(String outputDirPath) {
+		this.outputDirPath = outputDirPath;
+	}
+
+	@Override
+	public int[][] vertical(int[][] img, int numOfColumns, EnergyFunction func) {
+
+		boolean export = true;
+
+		for (int i = 0; i < numOfColumns; i++) {
+			double[][] heatMap = func.getEnergyMap(img);
+			int[] opt = getOptimalSeam(heatMap, true);
+
+			if (export)
+				exportImage(img, opt, i);
+
+			img = Util.shiftImage(img, opt);
+		}
+
+		return img;
+	}
+
 	// x - column, y - row, shortestPath[i][j] - minimal path sum from [i,j] to the
 	private double getOptimalPaths(double[][] heatMap, double[][] shortestPath, int i, int j) {
 
@@ -19,7 +48,7 @@ public class DiagonalSeamCarving implements SeamCarving {
 
 		int start = Math.max(j - 1, 0), end = Math.min(j + 1, heatMap[0].length - 1);
 		for (int k = start; k <= end; k++) { // iterate over 3 top
-																								// neighbors
+												// neighbors
 			if (shortestPath[i - 1][k] != Double.POSITIVE_INFINITY) {
 				tmp = shortestPath[i - 1][k];
 			} else {
@@ -91,21 +120,20 @@ public class DiagonalSeamCarving implements SeamCarving {
 		return optimalSeam;
 	}
 
-	@Override
-	public int[][] vertical(int[][] img, int numOfColumns, EnergyFunction func) {
-		
-		for (int i = 0; i < numOfColumns; i++) {
-			double[][] heatMap = func.getEnergyMap(img);
-			int[] opt = getOptimalSeam(heatMap, true);
-			img = Util.shiftImage(img, opt);
+	private void exportImage(int[][] img, int[] path, int index) {
+
+		BufferedImage outputImg = Util.arrToImg(img);
+		int rgb = Color.red.getRGB();
+		// draw the sim
+		for (int i = 0; i < img.length; i++) {
+			outputImg.setRGB(path[i], i, rgb);
 		}
 
-		return img;
-	}
-
-	@Override
-	public int [][] horizontal(int[][] input, int numOfRows, EnergyFunction func) {
-		// TODO Auto-generated method stub
-		return null;
+		File outputFile = new File(outputDirPath + "\\output-" + index + ".jpg");
+		try {
+			ImageIO.write(outputImg, "jpg", outputFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

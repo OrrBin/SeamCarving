@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import seamcarving.algorithm.BasicEnergyFunction;
 import seamcarving.algorithm.DiagonalSeamCarving;
 import seamcarving.algorithm.EnergyFunction;
+import seamcarving.algorithm.EntropyEnergyFunction;
 import seamcarving.algorithm.SeamCarving;
 import seamcarving.algorithm.StraightSeamCarving;
 
@@ -22,9 +23,10 @@ public class Test2 {
 		}
 
 		// ----------------- params -------------------
-		String inputFileName = args[0] + "apple.jpg";
-		int numOfCol = 2;
-		int numOfRow = Integer.valueOf(args[2]);
+		String inputFileName = args[0];
+		int numOfCol = 1;
+//		int numOfRow = Integer.valueOf(args[2]);
+		int numOfRow = 100;
 		int energyType = Integer.valueOf(args[3]);
 		String outputFileName = args[4];
 		// --------------------------------------------
@@ -33,10 +35,10 @@ public class Test2 {
 		BufferedImage img = ImageIO.read(new File(inputFileName));
 		File imgdst = new File(outputFileName);
 
-		EnergyFunction ef = new BasicEnergyFunction();
-		// EnergyFunction ef = new EntropyEnergyFunction(img);
+//		EnergyFunction ef = new BasicEnergyFunction();
+		 EnergyFunction ef = new EntropyEnergyFunction();
 		SeamCarving sc = new StraightSeamCarving();
-//		 SeamCarving sc = new StraightSeamCarving();
+//		 SeamCarving sc = new DiagonalSeamCarving(imgdst.getParent());
 
 		int[][] arr = Util.convertTo2DWithoutUsingGetRGB(img);
 
@@ -44,8 +46,9 @@ public class Test2 {
 		
 		System.out.println("before arr height, width : " + arr.length + ", " + arr[0].length);
 		arr = sc.vertical(arr,numOfCol, ef);
-		System.out.println("before arr height, width : " + arr.length + ", " + arr[0].length);
-		// BufferedImage imgOut = sc.horizontal(img, numOfRow, ef);
+//		arr = sc.horizontal(arr,numOfRow, ef);
+		System.out.println("after arr height, width : " + arr.length + ", " + arr[0].length);
+		 
 		
 		
 		BufferedImage imgOut = Util.arrToImg(arr);

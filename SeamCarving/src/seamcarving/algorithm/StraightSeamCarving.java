@@ -44,22 +44,16 @@ public class StraightSeamCarving implements SeamCarving {
 				img = Util.shiftImage(img, opt);
 			} else {
 				opt = getOptimalSeam(heatMap);
-				for (int j = 0; j < width; j++) {
-					int col = 255 - (i % 255);
-					img[opt][j] = new Color(col, col, col).getRGB();
-					heatMap[opt][j] = Double.POSITIVE_INFINITY;
+				for (int j = 0; j < height; j++) {
+					int col = (i % 255);
+					img[j][opt] = new Color(255, col, col).getRGB();
+					heatMap[j][opt] = Double.POSITIVE_INFINITY;
 				}
 			}
 		}
 
 		return img;
 
-	}
-
-	@Override
-	public int[][] horizontal(int[][] img, int numOfRows, EnergyFunction func) {
-
-		return img;
 	}
 
 }
