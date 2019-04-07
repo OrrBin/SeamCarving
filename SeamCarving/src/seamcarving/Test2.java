@@ -23,7 +23,7 @@ public class Test2 {
 
 		// ----------------- params -------------------
 		String inputFileName = args[0] + "apple.jpg";
-		int numOfCol = 300;
+		int numOfCol = 2;
 		int numOfRow = Integer.valueOf(args[2]);
 		int energyType = Integer.valueOf(args[3]);
 		String outputFileName = args[4];

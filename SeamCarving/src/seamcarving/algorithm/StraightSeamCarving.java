@@ -33,7 +33,7 @@ public class StraightSeamCarving implements SeamCarving {
 	public int[][] vertical(int[][] img, int numOfColumns, EnergyFunction func) {
 		boolean cut = false;
 		int height = img.length, width = img[0].length;
-		double[][] heatMap  = func.getEnergyMap(img);
+		double[][] heatMap = func.getEnergyMap(img);
 		int opt;
 
 		for (int i = 0; i < numOfColumns; i++) {
@@ -53,12 +53,12 @@ public class StraightSeamCarving implements SeamCarving {
 		}
 
 		return img;
-	
+
 	}
 
 	@Override
 	public int[][] horizontal(int[][] img, int numOfRows, EnergyFunction func) {
-		
+
 		return img;
 	}
 
