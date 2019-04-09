@@ -1,14 +1,12 @@
 package seamcarving.algorithm;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.rmi.server.UnicastRemoteObject;
 
 import seamcarving.Util;
 
 public class StraightSeamCarving implements SeamCarving {
 
-	private int getOptimalSeam(double[][] heatMap) {
+	public int getOptimalSeam(double[][] heatMap) {
 		double sum = 0;
 		double min = Double.POSITIVE_INFINITY;
 		int minIndex = -1;
@@ -31,17 +29,28 @@ public class StraightSeamCarving implements SeamCarving {
 
 	@Override
 	public int[][] vertical(int[][] img, int numOfColumns, EnergyFunction func) {
-		boolean cut = false;
-		int height = img.length, width = img[0].length;
+		if (numOfColumns == 0)
+			return img;
+
+		if (numOfColumns > 0) {
+			return verticalRemove(img, numOfColumns, func);
+		}
+
+		return verticalAdd(img, -numOfColumns, func);
+	}
+
+	private int[][] verticalRemove(int[][] img, int numOfColumns, EnergyFunction func) { // Decrease image size
+		boolean cut = true;
+		int height = img.length;
 		double[][] heatMap = func.getEnergyMap(img);
 		int opt;
-
+		
 		for (int i = 0; i < numOfColumns; i++) {
 
 			if (cut) {
 				heatMap = func.getEnergyMap(img);
 				opt = getOptimalSeam(heatMap);
-				img = Util.shiftImage(img, opt);
+				img = Util.shrinkImage(img, opt);
 			} else {
 				opt = getOptimalSeam(heatMap);
 				for (int j = 0; j < height; j++) {
@@ -51,9 +60,32 @@ public class StraightSeamCarving implements SeamCarving {
 				}
 			}
 		}
-
+		
 		return img;
-
 	}
 
+	private int[][] verticalAdd(int[][] img, int numOfColumns, EnergyFunction func) { // Increase image size
+		int height = img.length;
+		double[][] heatMap = func.getEnergyMap(img);
+		int opt;
+		int[][] optimalSeams = new int[numOfColumns][height];
+		
+//		System.out.println("Heatmap before:");
+//		Util.printArr(heatMap);
+		
+		for (int i = 0; i < numOfColumns; i++) {
+			opt = getOptimalSeam(heatMap);
+			for (int j = 0; j < height; j++) {
+				// int col = (i % 255);
+				// img[j][opt] = new Color(255, col, col).getRGB();
+				heatMap[j][opt] += 0.5;
+				optimalSeams[i][j] = opt;
+			}
+//			System.out.println("Heatmap after iteation "+i+":");
+//			Util.printArr(heatMap);
+		}
+		
+		img = Util.enlargeImage(img, optimalSeams);
+		return img;
+	}
 }

@@ -49,14 +49,15 @@ public class Util {
 		return result;
 	}
 
-	public static int[][] shiftImage(int[][] pixels, int index) { // for straight carving
+	public static int[][] shrinkImage(int[][] pixels, int index) { // For straight carving
 		int[] path = new int[pixels.length];
 		Arrays.fill(path, index);
-		return shiftImage(pixels, path);
+		return shrinkImage(pixels, path);
 
 	}
 
-	public static int[][] shiftImage(int[][] pixels, int[] path) { // for diagonal carving
+	public static int[][] shrinkImage(int[][] pixels, int[] path) { // For diagonal carving
+		// System.out.println(Arrays.toString(path));
 		int[][] result = new int[pixels.length][pixels[0].length - 1];
 
 		for (int i = 0; i < pixels.length; i++) {
@@ -64,6 +65,7 @@ public class Util {
 				if (j < path[i]) {
 					result[i][j] = pixels[i][j];
 				}
+
 				if (j > path[i]) {
 					result[i][j - 1] = pixels[i][j];
 				}
@@ -72,7 +74,47 @@ public class Util {
 		return result;
 	}
 
-	public static double[][] shiftImage(double[][] pixels, int[] path) { ////////////// for testing
+	public static int[][] enlargeImage(int[][] pixels, int[][] optimalSeams) {
+		int height = pixels.length, width = pixels[0].length;
+		int[][] pixelsToEnlarge = optimalSeamsToArray(optimalSeams, height, width);
+
+		int[][] newImage = new int[height][width + optimalSeams.length];
+
+		for (int i = 0; i < height; i++) {
+			int jump = 0;
+			for (int j = 0; j < width; j++) {
+				newImage[i][j + jump] = pixels[i][j];
+				for (int k = 0; k < pixelsToEnlarge[i][j]; k++) {
+					jump++;
+					newImage[i][j + jump] = pixels[i][j];
+				}
+			}
+		}
+
+		return newImage;
+	}
+
+	public static double[][] enlargeImage(double[][] pixels, int[][] optimalSeams) { //////////// for testing
+		int height = pixels.length, width = pixels[0].length;
+		int[][] pixelsToEnlarge = optimalSeamsToArray(optimalSeams, height, width);
+
+		double[][] newImage = new double[height][width + optimalSeams.length];
+
+		for (int i = 0; i < height; i++) {
+			int jump = 0;
+			for (int j = 0; j < width; j++) {
+				newImage[i][j + jump] = (int) pixels[i][j];
+				for (int k = 0; k < pixelsToEnlarge[i][j]; k++) {
+					jump++;
+					newImage[i][j + jump] = (int) pixels[i][j];
+				}
+			}
+		}
+
+		return newImage;
+	}
+
+	public static double[][] shrinkImage(double[][] pixels, int[] path) { ////////////// for testing
 		double[][] result = new double[pixels.length][pixels[0].length - 1];
 
 		for (int i = 0; i < pixels.length; i++) {
@@ -80,8 +122,8 @@ public class Util {
 				if (j < path[i]) {
 					result[i][j] = pixels[i][j];
 				}
+
 				if (j > path[i]) {
-					// System.out.println("i,j: " + i + " " + j);
 					result[i][j - 1] = pixels[i][j];
 				}
 			}
@@ -126,34 +168,35 @@ public class Util {
 		return imgOut;
 	}
 
-	public static BufferedImage arrToImg(double[][] arr) { ////////////// for testing
+	// Returns a int array in the size of the image.
+	// the value of [i][j] is the number times the pixel (i,j) needs to be duplicated
+	public static int[][] optimalSeamsToArray(int[][] optimalSeams, int height, int width) {
+		int[][] optArr = new int[height][width];
 
-		BufferedImage imgOut = new BufferedImage(arr[0].length, arr.length, BufferedImage.TYPE_INT_RGB);
-
-		for (int i = 0; i < arr.length; i++) {
-			for (int j = 0; j < arr[0].length; j++) {
-				imgOut.setRGB(j, i, (int) arr[i][j]);
+		for (int i = 0; i < optimalSeams.length; i++) {
+			for (int j = 0; j < optimalSeams[0].length; j++) {
+				optArr[j][optimalSeams[i][j]]++;
 			}
 		}
 
-		return imgOut;
+		return optArr;
 	}
 
 	public static int[][] rotateMatrix(int[][] matrix, boolean clockwise) {
-		 int totalRowsOfRotatedMatrix = matrix[0].length; //Total columns of Original Matrix
-		  int totalColsOfRotatedMatrix = matrix.length; //Total rows of Original Matrix
+		int totalRowsOfRotatedMatrix = matrix[0].length; // Total columns of Original Matrix
+		int totalColsOfRotatedMatrix = matrix.length; // Total rows of Original Matrix
 
-		  int[][] rotatedMatrix = new int[totalRowsOfRotatedMatrix][totalColsOfRotatedMatrix];
+		int[][] rotatedMatrix = new int[totalRowsOfRotatedMatrix][totalColsOfRotatedMatrix];
 
-		  for (int i = 0; i < matrix.length; i++) {
-		   for (int j = 0; j < matrix[0].length; j++) {
-			if(clockwise)
-				rotatedMatrix[j][ (totalColsOfRotatedMatrix-1)- i] = matrix[i][j];
-			else
-				rotatedMatrix[(totalRowsOfRotatedMatrix-1)-j][i] = matrix[i][j];
-		   }
-		  }
-		  return rotatedMatrix;
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				if (clockwise)
+					rotatedMatrix[j][(totalColsOfRotatedMatrix - 1) - i] = matrix[i][j];
+				else
+					rotatedMatrix[(totalRowsOfRotatedMatrix - 1) - j][i] = matrix[i][j];
+			}
+		}
+		return rotatedMatrix;
 	}
 
 }

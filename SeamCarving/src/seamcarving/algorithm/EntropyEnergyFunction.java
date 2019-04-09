@@ -1,7 +1,6 @@
 package seamcarving.algorithm;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 
 import seamcarving.Util;
 
@@ -14,11 +13,10 @@ public class EntropyEnergyFunction implements EnergyFunction {
 		basicFunc = new BasicEnergyFunction();
 	}
 
-	@Override
-	public double calculateEnergyForPixel(int[][] img, int i, int j) {
+	private double calculateEnergyForPixel(int[][] img, int i, int j) {
 		double energy = basicFunc.calculateEnergyForPixel(img, i, j);
 		double entropy = calculateEntropyForPixel(img, i, j);
-		double w = 0;
+		double w = 0.5;
 		return (w * energy + (1 - w) * entropy);
 	}
 
@@ -26,20 +24,21 @@ public class EntropyEnergyFunction implements EnergyFunction {
 		Color c = new Color(img[i][j]);
 		int r = c.getRed(), g = c.getGreen(), b = c.getBlue();
 		int avg = (r + g + b) / 3;
-		return new Color(avg, avg, avg).getRGB();
+//		return new Color(avg, avg, avg).getRGB();
+		return avg;
 	}
 
 	private double calculateEntropyForPixel(int[][] img, int i, int j) {
-		int startK = Math.max(j - 4, 0), endK = Math.min(img[0].length - 1, j + 4);
-		int startL = Math.max(i - 4, 0), endL = Math.min(img.length - 1, i + 4);
+		int startK = Math.max(i - 4, 0), endK = Math.min(img.length - 1, i + 4);
+		int startL = Math.max(j - 4, 0), endL = Math.min(img[0].length - 1, j + 4);
 		double H = 0, P;
 
-		for (int l = startL; l <= endL; l++) {
-			for (int k = startK; k <= endK; k++) {
-				if (pArr[l][k] == 0) {
-					pArr[l][k] = getP(img, l, k);
+		for (int k = startK; k <= endK; k++) {
+			for (int l = startL; l <= endL; l++) {
+				if (pArr[k][l] == 0) {
+					pArr[k][l] = getP(img, k, l);
 				}
-				P = pArr[l][k];
+				P = pArr[k][l];
 				H += P * Math.log(P);
 			}
 		}
@@ -77,7 +76,7 @@ public class EntropyEnergyFunction implements EnergyFunction {
 				heatMap[i][j] = calculateEnergyForPixel(img, i, j);
 			}
 		}
-		
+		Util.printArr(heatMap);
 		return heatMap;
 	}
 }

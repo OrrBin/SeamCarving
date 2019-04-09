@@ -12,84 +12,100 @@ import seamcarving.Util;
 public class DiagonalSeamCarving implements SeamCarving {
 
 	private String outputDirPath;
+	int outputNum;
+
+	public DiagonalSeamCarving() {
+	}
 
 	public DiagonalSeamCarving(String outputDirPath) {
 		this.outputDirPath = outputDirPath;
+		outputNum = 0;
 	}
 
 	@Override
+
 	public int[][] vertical(int[][] img, int numOfColumns, EnergyFunction func) {
+		if (numOfColumns == 0) {
+			return img;
+		}
 
-		boolean export = true;
+		if (numOfColumns > 0) {
+			return verticalRemove(img, numOfColumns, func);
+		}
 
+		return verticalAdd(img, -numOfColumns, func);
+	}
+
+	private int[][] verticalRemove(int[][] img, int numOfColumns, EnergyFunction func) {
+		
 		for (int i = 0; i < numOfColumns; i++) {
 			double[][] heatMap = func.getEnergyMap(img);
-			int[] opt = getOptimalSeam(heatMap, true);
+			int[] opt = getOptimalSeam(heatMap);
 
-			if (export)
+			if (outputDirPath != null)
 				exportImage(img, opt, i);
 
-			img = Util.shiftImage(img, opt);
+			img = Util.shrinkImage(img, opt);
 		}
 
 		return img;
 	}
-
-	// x - column, y - row, shortestPath[i][j] - minimal path sum from [i,j] to the
-	private double getOptimalPaths(double[][] heatMap, double[][] shortestPath, int i, int j) {
-
-//		System.out.println("getOptimlPaths, i, j:" + i + ", " + j);
-		if (i == 0) {
-			shortestPath[i][j] = heatMap[i][j];
-			return shortestPath[i][j];
+	
+	private int[][] verticalAdd(int[][] img, int numOfColumns, EnergyFunction func) { // Increase image size
+		int height = img.length;
+		double[][] heatMap = func.getEnergyMap(img);
+		int[][] optimalSeams = new int[numOfColumns][height];
+		
+		heatMap = func.getEnergyMap(img);
+//		System.out.println("Heatmap before:");
+//		Util.printArr(heatMap);
+		
+		for (int i = 0; i < numOfColumns; i++) {
+			int[] opt = getOptimalSeam(heatMap);
+			for (int j = 0; j < height; j++) {
+				heatMap[j][opt[j]] += 0.5;
+			}			
+			optimalSeams[i] = opt;
+			
+			if (outputDirPath != null)
+				exportImage(img, opt, outputNum++);
 		}
-		double min = Double.POSITIVE_INFINITY;
-		double tmp;
-
-		int start = Math.max(j - 1, 0), end = Math.min(j + 1, heatMap[0].length - 1);
-		for (int k = start; k <= end; k++) { // iterate over 3 top
-												// neighbors
-			if (shortestPath[i - 1][k] != Double.POSITIVE_INFINITY) {
-				tmp = shortestPath[i - 1][k];
-			} else {
-				tmp = getOptimalPaths(heatMap, shortestPath, i - 1, k);
-			}
-
-			if (tmp < min) {
-				min = tmp;
-			}
-		}
-
-		shortestPath[i][j] = heatMap[i][j] + min;
-		return shortestPath[i][j];
+		
+		img = Util.enlargeImage(img, optimalSeams);
+		
+		return img;
 	}
 
-	public int[] getOptimalSeam(double[][] heatMap, boolean isVertical) {
-		double sum = 0;
+	private double[][] getShortestPaths(double[][] heatMap, int height, int width) {
+		double[][] shortestPath = new double[height][width];
+
+		for (int j = 0; j < width; j++) {
+			shortestPath[0][j] = heatMap[0][j];
+		}
+
+		for (int i = 1; i < height; i++) {
+
+			shortestPath[i][0] = heatMap[i][0] + Math.min(shortestPath[i - 1][0], shortestPath[i - 1][1]); // handle the
+																											// edges
+																											// separately
+
+			for (int j = 1; j < width - 1; j++) {
+				shortestPath[i][j] = heatMap[i][j] + Math
+						.min(Math.min(shortestPath[i - 1][j - 1], shortestPath[i - 1][j]), shortestPath[i - 1][j + 1]);
+			}
+
+			shortestPath[i][width - 1] = heatMap[i][width - 1]
+					+ Math.min(shortestPath[i - 1][width - 1], shortestPath[i - 1][width - 2]);
+		}
+		return shortestPath;
+	}
+
+	public int[] getOptimalSeam(double[][] heatMap) {
 		double min = Double.POSITIVE_INFINITY;
 		int minIndex = -1;
 		int width = heatMap[0].length, height = heatMap.length;
 
-		double[][] shortestPath = new double[height][width]; // entry [i][j] will hold the weight of the shortest path
-																// from pixel (i,j) to the top
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				shortestPath[i][j] = Double.POSITIVE_INFINITY;
-			}
-		}
-		for (int j = 0; j < width; j++) {
-//			System.out.println("Getting optimal path for column: " + j);
-			getOptimalPaths(heatMap, shortestPath, height - 1, j);
-		}
-//		
-//		for (int i = 0; i < height; i++) {
-//			for (int j = 0; j < width; j++) {
-//				System.out.print(shortestPath[i][j]+" ");
-//				if (shortestPath[i][j] != 0 && shortestPath[i][j] != Double.POSITIVE_INFINITY)
-//					System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n");
-//			}
-//			System.out.println();
-//		}
+		double[][] shortestPath = getShortestPaths(heatMap, height, width);
 
 		int[] optimalSeam = new int[height];
 
@@ -128,8 +144,8 @@ public class DiagonalSeamCarving implements SeamCarving {
 		for (int i = 0; i < img.length; i++) {
 			outputImg.setRGB(path[i], i, rgb);
 		}
-
-		File outputFile = new File(outputDirPath + "\\output-" + index + ".jpg");
+		
+		File outputFile = new File(outputDirPath + "\\output\\output-" + index + ".jpg");
 		try {
 			ImageIO.write(outputImg, "jpg", outputFile);
 		} catch (IOException e) {

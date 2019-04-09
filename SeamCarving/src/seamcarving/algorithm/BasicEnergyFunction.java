@@ -1,14 +1,10 @@
 package seamcarving.algorithm;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
-
-import seamcarving.Util;
 
 public class BasicEnergyFunction implements EnergyFunction {
-
-	@Override
-	public double calculateEnergyForPixel(int[][] img, int i, int j) { // x - row, y - column
+	
+	double calculateEnergyForPixel(int[][] img, int i, int j) { 
 		int height = img.length;
 		int width = img[0].length;
 		int startI = Math.max(i - 1, 0), endI = Math.min(height - 1, i + 1);
