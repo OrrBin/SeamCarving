@@ -1,5 +1,6 @@
 package seamcarving;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.Arrays;
@@ -77,7 +78,6 @@ public class Util {
 	public static int[][] enlargeImage(int[][] pixels, int[][] optimalSeams) {
 		int height = pixels.length, width = pixels[0].length;
 		int[][] pixelsToEnlarge = optimalSeamsToArray(optimalSeams, height, width);
-
 		int[][] newImage = new int[height][width + optimalSeams.length];
 
 		for (int i = 0; i < height; i++) {
@@ -86,18 +86,37 @@ public class Util {
 				newImage[i][j + jump] = pixels[i][j];
 				for (int k = 0; k < pixelsToEnlarge[i][j]; k++) {
 					jump++;
-					newImage[i][j + jump] = pixels[i][j];
+					if (!Main.interpolation) { // Duplicate the chosen seam as is
+						newImage[i][j + jump] = pixels[i][j];
+					} else { // Interpolate with the right seam
+						if (j != width - 1) {
+							newImage[i][j + jump] = interpolate(pixels[i][j],pixels[i][j + 1]);
+						} else { // If pixel is rightmost, interpolate with left neighbor
+							newImage[i][j + jump] = interpolate(pixels[i][j],pixels[i][j - 1]);
+						}
+					}
 				}
 			}
 		}
 
 		return newImage;
 	}
-
+	
+	public static int interpolate(int RGB1, int RGB2) {
+		Color c1 = new Color(RGB1);
+		Color c2 = new Color(RGB2);
+		
+		int r = (c1.getRed() + c2.getRed()) / 2;
+		int g = (c1.getGreen() + c2.getGreen()) / 2;
+		int b = (c1.getBlue() + c2.getBlue()) / 2;
+		
+		return new Color(r,g,b).getRGB();
+	}
+	
 	public static double[][] enlargeImage(double[][] pixels, int[][] optimalSeams) { //////////// for testing
 		int height = pixels.length, width = pixels[0].length;
 		int[][] pixelsToEnlarge = optimalSeamsToArray(optimalSeams, height, width);
-
+		
 		double[][] newImage = new double[height][width + optimalSeams.length];
 
 		for (int i = 0; i < height; i++) {
@@ -106,7 +125,15 @@ public class Util {
 				newImage[i][j + jump] = (int) pixels[i][j];
 				for (int k = 0; k < pixelsToEnlarge[i][j]; k++) {
 					jump++;
-					newImage[i][j + jump] = (int) pixels[i][j];
+					if (!Main.interpolation) { // Duplicate the chosen seam as is
+						newImage[i][j + jump] = pixels[i][j];
+					} else { // Interpolate with the right seam
+						if (j != width - 1) {
+							newImage[i][j + jump] = (pixels[i][j] + pixels[i][j + 1]) / 2;
+						} else { // If pixel is rightmost, interpolate with left neighbor
+							newImage[i][j + jump] = (pixels[i][j] + pixels[i][j - 1]) / 2;
+						}
+					}
 				}
 			}
 		}
@@ -169,7 +196,9 @@ public class Util {
 	}
 
 	// Returns a int array in the size of the image.
-	// the value of [i][j] is the number times the pixel (i,j) needs to be duplicated
+	// The value of [i][j] is the number times the pixel (i,j) needs to be
+	// duplicated.
+
 	public static int[][] optimalSeamsToArray(int[][] optimalSeams, int height, int width) {
 		int[][] optArr = new int[height][width];
 

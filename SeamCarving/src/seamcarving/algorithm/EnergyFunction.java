@@ -2,5 +2,6 @@ package seamcarving.algorithm;
 
 public interface EnergyFunction {
 	
-	double[][] getEnergyMap(int[][] img);
+	// Returns an energy map of img.
+	double[][] getEnergyMap(int[][] img); 
 }

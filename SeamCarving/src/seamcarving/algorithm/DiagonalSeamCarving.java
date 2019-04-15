@@ -17,7 +17,7 @@ public class DiagonalSeamCarving implements SeamCarving {
 	public DiagonalSeamCarving() {
 	}
 
-	public DiagonalSeamCarving(String outputDirPath) {
+	public DiagonalSeamCarving(String outputDirPath) { // Using this builder output each seam selection.
 		this.outputDirPath = outputDirPath;
 		outputNum = 0;
 	}
@@ -37,12 +37,12 @@ public class DiagonalSeamCarving implements SeamCarving {
 	}
 
 	private int[][] verticalRemove(int[][] img, int numOfColumns, EnergyFunction func) {
-		
+
 		for (int i = 0; i < numOfColumns; i++) {
 			double[][] heatMap = func.getEnergyMap(img);
 			int[] opt = getOptimalSeam(heatMap);
 
-			if (outputDirPath != null)
+			if (outputDirPath != null) // If the second constructor was used.
 				exportImage(img, opt, i);
 
 			img = Util.shrinkImage(img, opt);
@@ -50,29 +50,26 @@ public class DiagonalSeamCarving implements SeamCarving {
 
 		return img;
 	}
-	
-	private int[][] verticalAdd(int[][] img, int numOfColumns, EnergyFunction func) { // Increase image size
+
+	private int[][] verticalAdd(int[][] img, int numOfColumns, EnergyFunction func) {
 		int height = img.length;
 		double[][] heatMap = func.getEnergyMap(img);
 		int[][] optimalSeams = new int[numOfColumns][height];
-		
 		heatMap = func.getEnergyMap(img);
-//		System.out.println("Heatmap before:");
-//		Util.printArr(heatMap);
-		
+
 		for (int i = 0; i < numOfColumns; i++) {
 			int[] opt = getOptimalSeam(heatMap);
 			for (int j = 0; j < height; j++) {
 				heatMap[j][opt[j]] += 0.5;
-			}			
+			}
 			optimalSeams[i] = opt;
-			
+
 			if (outputDirPath != null)
-				exportImage(img, opt, outputNum++);
+				exportImage(img, opt, outputNum);
 		}
-		
+
 		img = Util.enlargeImage(img, optimalSeams);
-		
+
 		return img;
 	}
 
@@ -85,7 +82,7 @@ public class DiagonalSeamCarving implements SeamCarving {
 
 		for (int i = 1; i < height; i++) {
 
-			shortestPath[i][0] = heatMap[i][0] + Math.min(shortestPath[i - 1][0], shortestPath[i - 1][1]); // handle the
+			shortestPath[i][0] = heatMap[i][0] + Math.min(shortestPath[i - 1][0], shortestPath[i - 1][1]); // Handle the
 																											// edges
 																											// separately
 
@@ -109,7 +106,7 @@ public class DiagonalSeamCarving implements SeamCarving {
 
 		int[] optimalSeam = new int[height];
 
-		for (int j = 0; j < width; j++) { // restore optimal seam from shortestPath
+		for (int j = 0; j < width; j++) { // Restore optimal seam from shortestPath
 			if (shortestPath[height - 1][j] < min) {
 				min = shortestPath[height - 1][j];
 				minIndex = j;
@@ -136,6 +133,8 @@ public class DiagonalSeamCarving implements SeamCarving {
 		return optimalSeam;
 	}
 
+	// Auxiliary function, to show each step in the process. Need to use the second
+	// constructor in order to use.
 	private void exportImage(int[][] img, int[] path, int index) {
 
 		BufferedImage outputImg = Util.arrToImg(img);
@@ -144,8 +143,10 @@ public class DiagonalSeamCarving implements SeamCarving {
 		for (int i = 0; i < img.length; i++) {
 			outputImg.setRGB(path[i], i, rgb);
 		}
-		
-		File outputFile = new File(outputDirPath + "\\output\\output-" + index + ".jpg");
+		outputNum++;
+		if (outputNum % 10 != 0)
+			return;
+		File outputFile = new File(outputDirPath + "\\output\\output-" + outputNum + ".jpg");
 		try {
 			ImageIO.write(outputImg, "jpg", outputFile);
 		} catch (IOException e) {

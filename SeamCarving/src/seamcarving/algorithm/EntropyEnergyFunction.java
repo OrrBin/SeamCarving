@@ -16,7 +16,7 @@ public class EntropyEnergyFunction implements EnergyFunction {
 	private double calculateEnergyForPixel(int[][] img, int i, int j) {
 		double energy = basicFunc.calculateEnergyForPixel(img, i, j);
 		double entropy = calculateEntropyForPixel(img, i, j);
-		double w = 0.5;
+		double w = 0.9;
 		return (w * energy + (1 - w) * entropy);
 	}
 
@@ -76,7 +76,7 @@ public class EntropyEnergyFunction implements EnergyFunction {
 				heatMap[i][j] = calculateEnergyForPixel(img, i, j);
 			}
 		}
-		Util.printArr(heatMap);
+		
 		return heatMap;
 	}
 }

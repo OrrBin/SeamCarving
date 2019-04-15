@@ -6,6 +6,7 @@ import seamcarving.Util;
 
 public class StraightSeamCarving implements SeamCarving {
 
+	// Returns the column index of the lowest seam.
 	public int getOptimalSeam(double[][] heatMap) {
 		double sum = 0;
 		double min = Double.POSITIVE_INFINITY;
@@ -40,27 +41,15 @@ public class StraightSeamCarving implements SeamCarving {
 	}
 
 	private int[][] verticalRemove(int[][] img, int numOfColumns, EnergyFunction func) { // Decrease image size
-		boolean cut = true;
-		int height = img.length;
 		double[][] heatMap = func.getEnergyMap(img);
 		int opt;
-		
-		for (int i = 0; i < numOfColumns; i++) {
 
-			if (cut) {
-				heatMap = func.getEnergyMap(img);
-				opt = getOptimalSeam(heatMap);
-				img = Util.shrinkImage(img, opt);
-			} else {
-				opt = getOptimalSeam(heatMap);
-				for (int j = 0; j < height; j++) {
-					int col = (i % 255);
-					img[j][opt] = new Color(255, col, col).getRGB();
-					heatMap[j][opt] = Double.POSITIVE_INFINITY;
-				}
-			}
+		for (int i = 0; i < numOfColumns; i++) {
+			heatMap = func.getEnergyMap(img);
+			opt = getOptimalSeam(heatMap);
+			img = Util.shrinkImage(img, opt);
 		}
-		
+
 		return img;
 	}
 
@@ -69,10 +58,7 @@ public class StraightSeamCarving implements SeamCarving {
 		double[][] heatMap = func.getEnergyMap(img);
 		int opt;
 		int[][] optimalSeams = new int[numOfColumns][height];
-		
-//		System.out.println("Heatmap before:");
-//		Util.printArr(heatMap);
-		
+
 		for (int i = 0; i < numOfColumns; i++) {
 			opt = getOptimalSeam(heatMap);
 			for (int j = 0; j < height; j++) {
@@ -81,10 +67,10 @@ public class StraightSeamCarving implements SeamCarving {
 				heatMap[j][opt] += 0.5;
 				optimalSeams[i][j] = opt;
 			}
-//			System.out.println("Heatmap after iteation "+i+":");
-//			Util.printArr(heatMap);
+			// System.out.println("Heatmap after iteation "+i+":");
+			// Util.printArr(heatMap);
 		}
-		
+
 		img = Util.enlargeImage(img, optimalSeams);
 		return img;
 	}
